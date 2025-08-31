@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  manager
+  developer
+  project_manager
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  firstName    String   @map("first_name")
+  lastName     String   @map("last_name")
+  role         Role
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdById  String?  @map("created_by")
+
+  createdBy    User?         @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdUsers User[]        @relation("UserCreatedBy")
+  otpTokens    OtpToken[]
+  invitations  UserInvitation[] @relation("UserInvitations")
+
+  @@map("users")
+}
+
+model OtpToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @db.VarChar(6)
+  expiresAt DateTime @map("expires_at")
+  isUsed    Boolean  @default(false) @map("is_used")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("otp_tokens")
+}
+
+model UserInvitation {
+  id         String   @id @default(uuid())
+  email      String
+  role       Role
+  invitedById String  @map("invited_by")
+  token      String   @default(uuid())
+  expiresAt  DateTime @map("expires_at")
+  isAccepted Boolean  @default(false) @map("is_accepted")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  invitedBy  User     @relation("UserInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@map("user_invitations")
+}
