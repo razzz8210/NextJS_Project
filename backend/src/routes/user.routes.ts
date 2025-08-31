@@ -11,14 +11,14 @@ router.use(authenticateToken);
 router.get('/profile', UserController.getCurrentUser);
 
 // Admin and Manager only routes
-router.get('/', requireRole(['admin', 'manager']), UserController.getAllUsers);
-router.get('/:id', requireRole(['admin', 'manager']), UserController.getUserById);
-router.put('/:id', requireRole(['admin', 'manager']), UserController.updateUser);
-router.delete('/:id', requireRole(['admin']), UserController.deleteUser);
+router.get('/', requireRole(['admin', 'manager'] as const), UserController.getAllUsers);
+router.get('/:id', requireRole(['admin', 'manager'] as const), UserController.getUserById);
+router.put('/:id', requireRole(['admin', 'manager'] as const), UserController.updateUser);
+router.delete('/:id', requireRole(['admin'] as const), UserController.deleteUser);
 
 // Invitation routes
-router.post('/invite', requireRole(['admin', 'manager']), UserController.inviteUser);
+router.post('/invite', requireRole(['admin', 'manager'] as const), UserController.inviteUser);
 router.post('/accept-invitation', UserController.acceptInvitation);
-router.get('/invitations/sent', requireRole(['admin', 'manager']), UserController.getInvitations);
+router.get('/invitations/sent', requireRole(['admin', 'manager'] as const), UserController.getInvitations);
 
 export default router;

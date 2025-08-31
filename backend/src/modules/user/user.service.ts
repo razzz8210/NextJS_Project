@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { generateToken } from '../../utils/jwt.utils';
 import { generateOTP } from '../../utils/validation.utils';
@@ -72,7 +72,7 @@ export class UserService {
   static async updateUser(userId: string, data: {
     firstName?: string;
     lastName?: string;
-    role?: string;
+    role?: Role;
     isActive?: boolean;
   }, currentUserId: string) {
     const user = await prisma.user.findUnique({

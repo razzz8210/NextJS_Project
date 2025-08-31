@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { UserService } from './user.service';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { InviteUserRequest, AcceptInvitationRequest } from '../../types/auth.types';
+import prisma from '../../lib/prisma';
 
 export class UserController {
   static async getAllUsers(req: AuthRequest, res: Response) {

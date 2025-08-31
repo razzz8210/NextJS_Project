@@ -6,7 +6,14 @@ import { LoginRequest, RegisterRequest, VerifyOtpRequest } from '../../types/aut
 export class AuthController {
   static async register(req: Request, res: Response) {
     try {
+      console.log('Registration request received:', req.body);
       const { email, password, firstName, lastName, role }: RegisterRequest = req.body;
+      
+      // Debug logging
+      console.log('Parsed registration data:', {
+        email, firstName, lastName, role,
+        passwordLength: password?.length
+      });
 
       // Validation
       if (!email || !password || !firstName || !lastName || !role) {
@@ -41,6 +48,7 @@ export class AuthController {
 
       res.status(201).json(result);
     } catch (error: any) {
+      console.error('Registration error:', error);
       res.status(400).json({
         success: false,
         message: error.message || 'Registration failed'

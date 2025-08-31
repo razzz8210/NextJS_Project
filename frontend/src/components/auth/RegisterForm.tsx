@@ -25,21 +25,27 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  interface RegisterFormData extends RegisterRequest {
+    confirmPassword: string;
+  }
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors }
-  } = useForm<RegisterRequest>();
+  } = useForm<RegisterFormData>();
 
   const password = watch('password');
 
-  const onSubmit = async (data: RegisterRequest) => {
+  const onSubmit = async (data: RegisterFormData) => {
+    // Remove confirmPassword before sending to API
+    const { confirmPassword, ...registerData } = data;
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await authService.register(data);
+      const response = await authService.register(registerData);
       
       if (response.success) {
         onSuccess?.(data.email);
@@ -122,11 +128,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onSwitchT
           <Select
             label="Role"
             options={roleOptions}
+            defaultValue=""
             error={errors.role?.message}
             {...register('role', {
-              required: 'Role is required'
+              required: 'Role is required',
+              validate: (value) => {
+                return ['admin', 'manager', 'developer', 'project_manager'].includes(value) || 
+                  'Invalid role selected';
+              }
             })}
-          />
+          >
+            <option value="" disabled>Select a role</option>
+          </Select>
 
           <Input
             label="Password"
